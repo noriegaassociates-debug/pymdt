@@ -29,6 +29,7 @@ import MDT.PRM
 import Common
 
 
+
 def main():
     #===========================================================================
     # While entering information below, it is a good idea to frequently check
@@ -40,6 +41,8 @@ def main():
 
 
 
+
+
     #===========================================================================
     # The driver is a singleton that provides access to all MDT input and
     # output.  Extract it and store it for use below.
@@ -47,12 +50,16 @@ def main():
     drv = MDT.Driver.INSTANCE
     
 
-        
+
+
+
     #===========================================================================
     # The driver has only 1 Site object and it's where most information must go
     # either directly or indirectly.  Extract it and store it for use below.
     #===========================================================================
     s = drv.Site
+
+
 
 
 
@@ -63,7 +70,9 @@ def main():
     mg = s.Microgrids[0]
 
 
-    
+
+
+
     #===========================================================================
     # Next for this model we will configure the design basis threats.
     #
@@ -486,6 +495,10 @@ def main():
 
     #===========================================================================
     # Create the lines connecting all assets in the grid.
+    #
+    # Note that in the special case of lines, providing "None" for the name
+    # (as below) will result in the creation of a default name of the form
+    # Line "<first node name>" to "<second node name>"
     #===========================================================================
     lSpec = pymdt.utils.FindEntityByName(drv.LineSpecifications, "C4-5")
     MakeLine(mg, None, sGen, bus4, length=990.0, base_spec=lSpec, specs=lSpec)
@@ -539,7 +552,7 @@ def main():
     
     #===========================================================================
     # The following will open the MDT graphical user interface with the
-    # file "pytonrun.mbf" opened, assuming it exists (see a few lines up).
+    # file "pythonrun.mbf" opened, assuming it exists (see a few lines up).
     #===========================================================================
     # pymdt.core.RunMDTGUI("C:/temp/pythonrun.mbf")
     #===========================================================================
@@ -561,7 +574,7 @@ def main():
     #===========================================================================
 
 
-
+    
 
  
     #===========================================================================
@@ -577,7 +590,6 @@ def main():
         print("===========================================================================")
     #===========================================================================
    
-
 
     
 

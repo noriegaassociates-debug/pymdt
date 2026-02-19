@@ -221,8 +221,8 @@ def MakeDiscrete(entries) -> MDT.Discrete:
         entries = {entries(0): entries(1)}
     elif type(entries) is not dict:
         entries = {entries}
-    for ent in entries.items():
-        ents.Add(MDT.DiscreteEntry(ent[0], ent[1]), undos)
+    for val, prob in entries.items():
+        ents.Add(MDT.DiscreteEntry(val, prob), undos)
     return d
          
 def MakePlacement(init_dist: CD.IDistribution, subseq_dist: CD.IDistribution) -> MDT.PlacementDistribution:

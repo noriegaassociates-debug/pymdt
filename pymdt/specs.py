@@ -9,8 +9,7 @@ class details:
     
     @staticmethod
     def _extract_battery_spec_efficiency_values(bat_spec, **kwargs):
-        # Don't use kwargs.get to avoid creation of the UndoPack if not needed.
-        undos = kwargs["undos"] if "undos" in kwargs else Common.Undoing.UndoPack()
+        undos = pymdt.utils.details._extract_undos(True, **kwargs)
         maxlen = bat_spec.NumberOfEfficiencyValues
         ceff_vals = kwargs.get("charge_efficiencies")
         if ceff_vals is not None:
@@ -26,8 +25,7 @@ class details:
                 
     @staticmethod
     def _extract_gen_spec_perf_values(gen_spec, **kwargs):
-        # Don't use kwargs.get to avoid creation of the UndoPack if not needed.
-        undos = kwargs["undos"] if "undos" in kwargs else Common.Undoing.UndoPack()
+        undos = pymdt.utils.details._extract_undos(True, **kwargs)
         maxlen = gen_spec.NumberOfPerformanceValues
         eff_vals = kwargs.get("efficiencies")
         if eff_vals is not None:
@@ -43,8 +41,7 @@ class details:
                 
     @staticmethod
     def _extract_gen_start_probabilities(gen_spec, **kwargs):
-        # Don't use kwargs.get to avoid creation of the UndoPack if not needed.
-        undos = kwargs["undos"] if "undos" in kwargs else Common.Undoing.UndoPack()
+        undos = pymdt.utils.details._extract_undos(True, **kwargs)
         st_probs = kwargs.get("start_probabilities")
         if st_probs is not None:
             probs = gen_spec.get_StartProbabilities()

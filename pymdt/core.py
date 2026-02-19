@@ -39,6 +39,30 @@ class powerflow_types(Enum):
     DC = MDT.PRMSettings.PowerflowTypeEnum.DC
     """ Indicates that DC powerflow calculations should be conducted.
     """
+    
+class powerflow_precisions(Enum):
+    """ An enumeration of the possible powerflow precision levels supported by
+    the MDT.
+    """
+
+    FULL = MDT.PRMSettings.PowerflowPrecisionEnum.Full
+    """ Use full precision of all PF parameters in the solution.
+    """
+    
+    HIGH = MDT.PRMSettings.PowerflowPrecisionEnum.High
+    """ Round a small amount precision away from the PF parameters in the
+        solution process to increase cache hits (round to ~10e-6 Watts).
+    """
+    
+    MEDIUM = MDT.PRMSettings.PowerflowPrecisionEnum.Medium
+    """ Round precision away from the PF parameters in the
+        solution process to increase cache hits (round to ~10e-4 Watts).
+    """
+
+    LOW = MDT.PRMSettings.PowerflowPrecisionEnum.Low
+    """ Round significant precision away from the PF parameters in the
+        solution process to increase cache hits (round to ~10e-2 Watts).
+    """
 
 class details:
     
@@ -164,9 +188,8 @@ class details:
         
         if hasattr(int_units, "value"): int_units = int_units.value
         if hasattr(per_units, "value"): per_units = per_units.value
-            
-        # Don't use kwargs.get to avoid creation of the UndoPack if not needed.
-        undos = kwargs["undos"] if "undos" in kwargs else Common.Undoing.UndoPack()
+
+        undos = pymdt.utils.details._extract_undos(True, **kwargs)
 
         rpd.SetPeriodAndInterval(
             period, per_units, interval, int_units, undos
@@ -2956,7 +2979,7 @@ def MakeFragilityCurve(
     fc = details.build_fragility_curve(name, **kwargs)
     owner = pymdt.core.details._extract_owner(f, **kwargs)
     if owner is not None:
-        details._execute_2_arg_add_with_undo(
+        pymdt.utils.details._execute_2_arg_add_with_undo(
             owner, "AddFragilityCurveCanceled", "get_FragilityCurves", haz, fc,
             **kwargs
             )
@@ -3804,6 +3827,11 @@ def ConfigurePRM(**kwargs):
             powerflow calculations and no (NONE) calculations.  These should be
             provided as members of the pymdt.core.powerflow_types enumeration.
             The default is NONE.
+        powerflow_precision:
+            The precision used to find powerflow solutions in a cache of
+            previously run computations. This should be provided as members of
+            the pymdt.core.powerflow_precisions enumeration. The default is
+            MEDIUM.
         use_reliability: bool
             Whether or not to include reliability calculations in the
             simulation.  This serves as a means of telling the simulation to
@@ -3837,6 +3865,16 @@ def ConfigurePRM(**kwargs):
         prmsets, "PowerflowType", powerflow
         )
     
+    if pymdt.MDT_VERSION > System.Version(1, 4, 2565, 0):
+        powerflow_prec = kwargs.get(
+            "powerflow_precision", pymdt.core.powerflow_precisions.MEDIUM
+            )
+        if hasattr(powerflow_prec, "value"): powerflow_prec = powerflow_prec.value
+  
+        pymdt.utils.details._execute_loggable_property_set_with_undo(
+            prmsets, "PowerflowPrecision", powerflow_prec
+            )
+
     pymdt.utils.details._execute_loggable_property_set_with_undo(
         prmsets, "UseReliability", kwargs.get("use_reliability", True)
         )

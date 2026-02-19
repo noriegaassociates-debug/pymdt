@@ -156,7 +156,13 @@ def MakeOrNode(parent, children, **kwargs) -> TMO.OrNode:
         empty collection if desired as children can be added subsequently.
     kwargs: dict
         A dictionary of all the variable arguments provided to this function.
-        This function does not use any keyword arguments.
+        The arguments used by this method include:
+
+        err_log: Common.Logging.Log
+            The log into which to record any errors encountered during the
+            building, loading, or saving of the new item.  If this argument is
+            not provided, messages will be recorded into the
+            pymdt.GlobalErrorLog instance.
         
     Returns
     -------
@@ -182,7 +188,13 @@ def MakeAndNode(parent, children, **kwargs) -> TMO.AndNode:
         empty collection if desired as children can be added subsequently.
     kwargs: dict
         A dictionary of all the variable arguments provided to this function.
-        This function does not use any keyword arguments.
+        The arguments used by this method include:
+
+        err_log: Common.Logging.Log
+            The log into which to record any errors encountered during the
+            building, loading, or saving of the new item.  If this argument is
+            not provided, messages will be recorded into the
+            pymdt.GlobalErrorLog instance.
         
     Returns
     -------
@@ -208,7 +220,16 @@ def MakeMofNNode(parent, children, m: int, **kwargs) -> TMO.MofNNode:
         an empty collection if desired as children can be added subsequently.
     kwargs: dict
         A dictionary of all the variable arguments provided to this function.
-        This function does not use any keyword arguments.
+        The arguments used by this method include:
+
+        err_log: Common.Logging.Log
+            The log into which to record any errors encountered during the
+            building, loading, or saving of the new item.  If this argument is
+            not provided, messages will be recorded into the
+            pymdt.GlobalErrorLog instance.
+        undos: Common.Undoing.IUndoPack
+            An optional undo pack into which to load the undoable objects
+            generated during this operation (if any).
         
     Returns
     -------
@@ -225,8 +246,8 @@ def MakeMofNNode(parent, children, m: int, **kwargs) -> TMO.MofNNode:
     return ret
 
 def MakeNotNode(parent, child, **kwargs) -> TMO.NotNode:
-    """ This helper function creates a new not node, extracts any
-    provided properties, loads it into its parent, and returns it.
+    """ This helper function creates a new not node, extracts any provided
+    properties, loads it into its parent, and returns it.
         
     Parameters
     ----------
@@ -238,7 +259,13 @@ def MakeNotNode(parent, child, **kwargs) -> TMO.NotNode:
         none if desired as the child can be added subsequently.
     kwargs: dict
         A dictionary of all the variable arguments provided to this function.
-        This function does not use any keyword arguments.
+        The arguments used by this method include:
+
+        err_log: Common.Logging.Log
+            The log into which to record any errors encountered during the
+            building, loading, or saving of the new item.  If this argument is
+            not provided, messages will be recorded into the
+            pymdt.GlobalErrorLog instance.
         
     Returns
     -------

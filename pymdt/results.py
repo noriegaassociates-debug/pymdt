@@ -19,14 +19,14 @@ class details:
         }
     
     _mg_list_extractors = {
-        MDT.Line: lambda mg: mg.get_Lines(False),
-        MDT.Bus: lambda mg: mg.get_Busses(False),
-        MDT.Node: lambda mg: mg.get_Nodes(False),
-        MDT.Switch: lambda mg: mg.get_Switches(False),
-        MDT.DieselTank: lambda mg: mg.get_DieselTanks(False),
-        MDT.PropaneTank: lambda mg: mg.get_PropaneTanks(False),
-        MDT.ThermalLoad: lambda mg: mg.get_ThermalLoads(False),
-        MDT.Transformer: lambda mg: mg.get_Transformers(False),
+        MDT.Line: lambda mg: mg.Lines,
+        MDT.Bus: lambda mg: mg.Busses,
+        MDT.Node: lambda mg: mg.Nodes,
+        MDT.Switch: lambda mg: mg.Switches,
+        MDT.DieselTank: lambda mg: mg.DieselTanks,
+        MDT.PropaneTank: lambda mg: mg.PropaneTanks,
+        MDT.ThermalLoad: lambda mg: mg.ThermalLoads,
+        MDT.Transformer: lambda mg: mg.Transformers,
         MDT.MicrogridNodeGroup: lambda mg: mg.NodeGroups,
         MDT.MicrogridNecessitationDependency: lambda mg: mg.NecessitationDependencies,
         MDT.MicrogridDesignOption: lambda mg: mg.DesignOptions
@@ -134,7 +134,7 @@ class details:
         return details.extract_bus_entity(asset, obus)
     
     @staticmethod
-    def extract_variable_selections(respSet) -> {}:
+    def extract_variable_selections(respSet) -> dict:
         upgs = respSet.Upgrades
         ret = {}
         for kvp in upgs:
@@ -164,7 +164,6 @@ def MakeResultManager(sri) -> MDT.ResultViewManager:
     if not pymdt.utils.details._is_collection(sri): sri = [sri]
     for r in sri: rvm.get_SolverRunInfos().Add(r)
     return rvm
-
 
 def GetMicrogridRealization(mg: MDT.Microgrid, config: MDT.SiteUpgradeConfiguration) -> MDT.MicrogridRealization:
     """ Extracts and returns the MDT.MicrogridRealization for the specified

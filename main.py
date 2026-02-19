@@ -47,7 +47,7 @@ class CustomMetric(MDT.CustomMicrogridMetricBase):
         self.ImprovementType = pymdt.metrics.improvement_types.maximize.value
         self.mybus = None
 
-    def CustomEvaluate(self, config, installResp) -> TMO.Response:        
+    def CustomEvaluate(self, config, installResp) -> TMO.Response:
         MDT.PRM.PRMEvaluator.INSTANCE.EnsurePRMEvaluated(config)
         muc = config.get_ModelUpgradeConfig(self.Model)
         bus = pymdt.results.FindCorrespondingBusFromConfig(self.mybus, config)

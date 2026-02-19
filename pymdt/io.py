@@ -16,23 +16,27 @@ class ImportFormats:
     """
    
     Windmill = MDT.WindmillTextImporter.TXT_FORMAT
-    """ The text format exported from a Windmill model. (\*.txt)
+    r""" The text format exported from a Windmill model. (\*.txt)
     """
 
     ReNCAT = MDT.ReNCATResultsImporter.JSON_FORMAT
-    """ The JSON format exported from a ReNCAT model. (\*.json)
+    r""" The JSON format exported from a ReNCAT model. (\*.json)
     """
 
     OpenDSS = MDT.OpenDSSImporter.DSS_FORMAT
-    """ The OpenDSS file format. (\*.dss)
+    r""" The OpenDSS file format. (\*.dss)
+    """
+    
+    PandaPower = MDT.PandaPowerImporter.JSON_FORMAT
+    r""" The Panda Power JSON file format. (\*.json)
     """
 
     MDTProject = MDT.MDTProjectImporterExporter.PROJ_FORMAT
-    """ The project files created by the MDT that include any external data
+    r""" The project files created by the MDT that include any external data
     packaged in. (\*.mpf)
     """
-   
-    
+
+
 class details:
     
     @staticmethod
@@ -66,14 +70,79 @@ class details:
             i += 1
 
         return None
+    
+    @staticmethod
+    def _chooseReNCATGeneratorTypes(args):
+        print("Select a fuel type for each of the following generators " +
+              "(1=Diesel, 2=Natural Gas, 3=Propane, 4=Solar, 5=Wind, 6=Hydro):")
+
+        ret = System.Collections.Generic.Dictionary[System.String, System.String]()
+
+        for le in args.Messages:
+            
+            choice = 2
+
+            while True:
+                try:
+                    choice = int(input(le.Tag + " / " + le.Message + ": "))
+
+                    if (choice < 1) or (choice > 6):
+                        raise ValueError
+                    
+                    break
+                except ValueError:
+                    print(
+                        "Invalid input.  Please enter an integer from the list " +
+                        "provided (1-6)."
+                        )
+
+            ret.Add(
+                le.Tag + "/" + le.Message,
+                ["Diesel", "Natural Gas", "Propane", "Solar", "Wind", "Hydro"][choice-1]
+                )
+
+        return ret
+
+    @staticmethod
+    def _askAboutReNCATMessages(args):
+        
+        msg = ""
+
+        for e in args.Messages:
+            msg = e.Message
+            break
+
+        yeses = ["y", "yes", "yup", "yas"]
+        nos = ["n", "no", "nope", "nar"]
+
+        while True:
+            try:
+                resp = input(msg + "(Y or N):")
+                respcf = resp.casefold()
+
+                if respcf not in yeses and respcf not in nos:
+                    raise ValueError
+                
+                choice = respcf in yeses
+
+                break
+            except ValueError:
+                print("Invalid input.  Please enter Y or N.")
+
+        return Common.GUI.Util.GraphicalMessageManager.OperationResult.YES \
+            if choice else Common.GUI.Util.GraphicalMessageManager.OperationResult.NO
 
     @staticmethod
     def _onNeedUserInput(sender, args):
         if args.Message == MDT.ReNCATResultsImporter.INPUT_MSG:
             args.Answer = details._chooseReNCATSolution(args)
+        elif args.Message == MDT.ReNCATResultsImporter.GEN_TYPE_MSG:
+            args.Answer = details._chooseReNCATGeneratorTypes(args)
+        elif args.Message == MDT.ReNCATResultsImporter.READ_MISSION_MSG:
+            args.Answer = details._askAboutReNCATMessages(args)
 
 def ImportInputFile(file_name, format=None, errLog: Common.Logging.Log=None) -> Common.Logging.Log:
-    """ Imports the file with the supplied name and loads MDT inputs from it.
+    r""" Imports the file with the supplied name and loads MDT inputs from it.
     
     It is possible that multiple file types can be associated with the same file
     extension.  For example, several applications store their inputs in JSON
@@ -83,6 +152,7 @@ def ImportInputFile(file_name, format=None, errLog: Common.Logging.Log=None) -> 
     There are a few file types that the MDT is able to import.  Examples include:
         * MDT Project Files (\*.mpf)
         * OpenDSS Files (\*.dss)
+        * Panda Power JSON Files (\*.json)
         * ReNCAT JSON Files (\*.json)
         * Windmill Export Files (\*.txt)
     
@@ -99,9 +169,6 @@ def ImportInputFile(file_name, format=None, errLog: Common.Logging.Log=None) -> 
     errLog: Common.Logging.Log
         An optional log into which to merge any messages resulting from the 
         import operation.
-    undos: Common.Undoing.IUndoPack
-        An optional undo pack into which to load the undoable objects generated
-        during this operation (if any).
     
     Returns
     -------

@@ -120,14 +120,21 @@ class details:
     def _log_merge_handler(sender, args):
         if details.currentLog is not None:
             details.currentLog.Merge(args.Log)
-            
+
+    @staticmethod
+    def _extract_undos(create_new_if_needed: bool, **kwargs) -> Common.Undoing.IUndoPack:
+        undos = kwargs.get("undos")
+        if undos is None and create_new_if_needed:
+            undos = Common.Undoing.UndoPack()
+        return undos
+
     @staticmethod
     def _extract_guid(identified, **kwargs):
         # can be missing all together, a string, or a System.Guid.  If missing,
         # do nothing. The default that already exists in the identified object
         # can be kept.
         guid = kwargs.get("guid")
-        if guid:
+        if guid is not None:
             if type(guid) is str:
                 guid = System.Guid(guid)
             identified.ResetUID(guid)
@@ -155,8 +162,7 @@ class details:
         ) -> Common.Logging.Log:
         
         lst = getattr(into, collectionGetterName)
-        # Don't use kwargs.get to avoid creation of the UndoPack if not needed.
-        undos = kwargs["undos"] if "undos" in kwargs else Common.Undoing.UndoPack()   
+        undos = details._extract_undos(True, **kwargs)
         return details._execute_loggable_action(
             into, cancelEvtName, lambda: lst().Add(a1, a2, a3, undos), **kwargs
             )
@@ -176,9 +182,8 @@ class details:
         into, cancelEvtName, collectionGetterName, a1, a2, **kwargs
         ) -> Common.Logging.Log:
         
-        lst = getattr(into, collectionGetterName)        
-        # Don't use kwargs.get to avoid creation of the UndoPack if not needed.
-        undos = kwargs["undos"] if "undos" in kwargs else Common.Undoing.UndoPack()  
+        lst = getattr(into, collectionGetterName)
+        undos = details._extract_undos(True, **kwargs)
         return details._execute_loggable_action(
             into, cancelEvtName, lambda: lst().Add(a1, a2, undos), **kwargs
             )
@@ -198,9 +203,8 @@ class details:
         into, cancelEvtName, collectionGetterName, item, **kwargs
         ) -> Common.Logging.Log:
         
-        lst = getattr(into, collectionGetterName)        
-        # Don't use kwargs.get to avoid creation of the UndoPack if not needed.
-        undos = kwargs["undos"] if "undos" in kwargs else Common.Undoing.UndoPack()     
+        lst = getattr(into, collectionGetterName)
+        undos = details._extract_undos(True, **kwargs)
         return details._execute_loggable_action(
             into, cancelEvtName, lambda: lst().Add(item, undos), **kwargs
             )
@@ -221,9 +225,8 @@ class details:
         ) -> Common.Logging.Log:
         
         prop = getattr(obj, "set_" + propName)
-        
-        # Don't use kwargs.get to avoid creation of the UndoPack if not needed.
-        undos = kwargs["undos"] if "undos" in kwargs else Common.Undoing.UndoPack()
+
+        undos = details._extract_undos(True, **kwargs)
         
         if custom_cancel_evt_name is None: 
             custom_cancel_evt_name = "Change" + propName + "Canceled"
@@ -254,8 +257,7 @@ class details:
         
         prop = getattr(obj, "set_" + propName)
         
-        # Don't use kwargs.get to avoid creation of the UndoPack if not needed.
-        undos = kwargs["undos"] if "undos" in kwargs else Common.Undoing.UndoPack()
+        undos = details._extract_undos(True, **kwargs)
         
         if custom_cancel_evt_name is None: 
             custom_cancel_evt_name = "Change" + propName + "Canceled"
