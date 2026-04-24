@@ -1,0 +1,13 @@
+nerc_nrc_mapping:
+  status: SIM_ONLY
+  notes: No operational authority granted
+  nerc:
+    - CIP-002: asset_identification_required
+    - CIP-007: system_security_management
+  nrc:
+    - 10CFR50: reactor_safety_limits
+    - RG1.152: digital_control_systems
+  elevation_requirements:
+    - real_telemetry_binding
+    - site_specific_validation
+    - HiC_authorization
