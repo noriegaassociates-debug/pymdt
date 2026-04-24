@@ -1,0 +1,15 @@
+component_definition:
+  title: GNES PyMDT Execution Layer
+  version: 1.0
+  oscal_version: 1.1.2
+  components:
+    - title: PyMDT Digital Twin Layer
+      type: software
+      description: Simulation-only microgrid modeling layer
+      controls:
+        - id: AU-2
+          desc: Audit events logged
+        - id: SI-4
+          desc: System monitoring
+        - id: SC-13
+          desc: Cryptographic protection
